@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_streaming_app/screens/home/home_screen.dart';
 import 'package:video_streaming_app/screens/register/registration_screen.dart';
 
-import '../../controller/home_controller.dart';
+import '../../controller/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -18,9 +19,11 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController password = TextEditingController();
   bool validate = false;
 
+
   @override
   Widget build(BuildContext context) {
     // bool validate = false;
+    final pro = Provider.of<HomeProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -77,6 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   onLogin() async {
+    final pro = Provider.of<HomeProvider>(context, listen: false);
+    await pro.getHomeData();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       name.text.isEmpty ? validate = true : validate = false;
@@ -86,16 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
         name.text.isNotEmpty &&
         password.text.isNotEmpty &&
         password.text == prefs.getString("Password")) {
-      await Provider.of<HomeViewModel>(context, listen: false)
-          .getHomeData(context)
-          .then((_) {
-//save User
-        //context.read<AuthProvider>().saveUser(user);
-        // PushFunctions.pushReplace(context, const MainScreen());
 
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-      });
+      // });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,

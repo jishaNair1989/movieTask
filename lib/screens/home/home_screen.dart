@@ -1,9 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_streaming_app/model/resp_model.dart';
 
-import '../../controller/home_controller.dart';
+import '../../controller/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -13,65 +11,126 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Future <List<MovieRespModel>>? movieList;
-
-
-
   @override
   Widget build(BuildContext context) {
-    final homeController = Provider.of<HomeViewModel>(context);
+    final pro = Provider.of<HomeProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
-      ),
-
-
-      //body: TextButton(onPressed: () {getMovie(); }, child: Text('fetch data'),),
-      body: Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(8.0),
-      child: homeController.homeDatas.isEmpty ? Center(child: Text("No data")) : buildFutureBuilder(homeController),
-    ),
-
-
-    );
-  }
-
-  ListView buildFutureBuilder( homeController) {
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int index) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: CircleAvatar(
-                    radius: 22,
-                    child: ClipOval(
-                      child: Image.network(
-                          homeController.result![index].poster ?? ''),
-                    ),
-                  ),
-
-                ),
-                ListTile(
-                    leading: Text(
-                      homeController.result![index].language.toString(),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ))
-              ],
+        title: const Text('Movies'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => const AlertDialog(
+                          title:
+                              Text('Company: Geeksynergy Technologies Pvt Ltd'),
+                          content: Text('Address: Sanjayanagar, Bengaluru-56\n'
+                              'Phone: XXXXXXXXX09\n'
+                              'Email: XXXXXX@gmail.com\n'),
+                        ));
+              },
+              icon: Icon(Icons.menu),
             ),
+          )
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: pro.datas.length,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
+          child: Column(
+            children: [
+              Row(children: [
+                Column(
+                  children: [
+                    const Icon(
+                      Icons.arrow_drop_up,
+                      size: 25,
+                    ),
+                    Text(pro.datas[index].voting.toString()),
+                    const Icon(
+                      Icons.arrow_drop_down,
+                      size: 25,
+                    ),
+                    const Text('Votes')
+                  ],
+                ),
+                Container(
+                  height: 100,
+                  width: 100,
+                  child: Image.network(pro.datas[index].poster.toString(),),
+                ),
+                Expanded(
+                  child: SizedBox(
+                    width: 100,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              pro.datas[index].title.toString(),
+                              style: const TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text(
+                            "Genre:${pro.datas[index].genre}",
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.normal),
+                          ),
+                          Text(
+                            "Director:${pro.datas[index].director}",
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.normal),
+                          ),
+                          SingleChildScrollView(
+                              child: Text(
+                            "Starring:${pro.datas[index].stars}",
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.normal),
+                          )),
+                          Row(
+                            children: [
+                              Text("${pro.datas[index].pageViews} Views",
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.blue)),
+                              const VerticalDivider(
+                                width: 10,
+                                thickness: 1,
+                                indent: 20,
+                                endIndent: 0,
+                                color: Colors.blue,
+                              ),
+                              Text("Voted by ${pro.datas[index].voting} people",
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.blue))
+                            ],
+                          ),
+                        ]),
+                  ),
+                ),
+              ]),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: SizedBox(
+                    width: 400,
+                    height: 40,
+                    child: ElevatedButton(
+                        onPressed: () {}, child: Text("Watch Trailer"))),
+              )
+            ],
           ),
-        );
-      },
-      itemCount: homeController.result?.length,
-
+        ),
+      ),
     );
   }
-
-
-
 }
